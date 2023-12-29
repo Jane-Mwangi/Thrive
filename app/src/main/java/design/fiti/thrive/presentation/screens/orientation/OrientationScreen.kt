@@ -17,7 +17,7 @@ import design.fiti.thrive.R
 fun OrientationScreen() {
 Scaffold {innerPadding->
     Box(modifier = Modifier.padding(innerPadding)){
-        Image(painter = painterResource(id = R.drawable.auth_background), contentDescription =null )
+
     }
 }
 }
