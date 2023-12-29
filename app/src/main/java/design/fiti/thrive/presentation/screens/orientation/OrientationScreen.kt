@@ -15,9 +15,12 @@ import design.fiti.thrive.R
 @Preview
 @Composable
 fun OrientationScreen() {
-Scaffold {innerPadding->
-    Box(modifier = Modifier.padding(innerPadding)){
-
+    Scaffold { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            Image(
+                painter = painterResource(id = R.drawable.auth_background),
+                contentDescription = null
+            )
+        }
     }
-}
 }
