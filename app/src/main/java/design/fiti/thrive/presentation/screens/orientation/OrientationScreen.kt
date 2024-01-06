@@ -31,10 +31,13 @@ import design.fiti.thrive.presentation.utility.ReusableAppButton
 
 @Preview
 @Composable
-fun OrientationScreen(navigateToSignUpScreen: () -> Unit = {}) {
+fun OrientationScreen(
+    navigateToSignUpScreen: () -> Unit = {},
+    navigateToSignInScreen: () -> Unit = {}
+) {
     Scaffold { innerPadding ->
         val scrollState = rememberScrollState()
-        Column (modifier = Modifier.verticalScroll(state = scrollState)){
+        Column(modifier = Modifier.verticalScroll(state = scrollState)) {
 
             Box(modifier = Modifier.padding(innerPadding)) {
                 Image(
@@ -101,9 +104,9 @@ fun OrientationScreen(navigateToSignUpScreen: () -> Unit = {}) {
                 navigateToSignUpScreen()
             })
             Spacer(modifier = Modifier.height(16.dp))
-            ReusableAppButton(text = "Login") {
-            }
-
+            ReusableAppButton(text = "Sign In", onClick = {
+                navigateToSignInScreen()
+            })
         }
     }
 }

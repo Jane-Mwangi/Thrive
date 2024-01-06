@@ -45,8 +45,8 @@ import design.fiti.thrive.presentation.utility.ReusableAppButton
 
 @Preview
 @Composable
-fun LoginScreen(
-    navigateToSignInScreen: () -> Unit = {}
+fun SignInScreen(
+    navigateToHomeScreen: () -> Unit = {}
 ) {
     Scaffold { innerPadding ->
         val scrollState = rememberScrollState()
@@ -87,8 +87,8 @@ fun LoginScreen(
             PasswordTextField()
             Spacer(modifier = Modifier.height(16.dp))
             Spacer(modifier = Modifier.height(16.dp))
-            ReusableAppButton(text = "Login", onClick = {
-                navigateToSignInScreen()
+            ReusableAppButton(text = "Sign in", onClick = {
+                navigateToHomeScreen()
             })
 
         }

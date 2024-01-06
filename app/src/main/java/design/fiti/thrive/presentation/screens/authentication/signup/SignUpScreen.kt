@@ -22,20 +22,19 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import design.fiti.thrive.R
 
 import design.fiti.thrive.presentation.utility.ReusableAppButton
@@ -46,6 +45,14 @@ import design.fiti.thrive.presentation.utility.ReusableAppButton
 fun SignUPScreen(
     navigateToSignInScreen: () -> Unit = {}
 ) {
+    val viewModel: SignUpViewModel = hiltViewModel()
+    val screenState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(key1 = screenState.isLoading) {
+        if (!screenState.isLoading)
+            navigateToSignInScreen()
+    }
+
     Scaffold { innerPadding ->
         val scrollState = rememberScrollState()
         Column(
@@ -69,7 +76,7 @@ fun SignUPScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Sign Up to continue",
+                            text = "Sign in to continue",
                             modifier = Modifier.padding(),
                             style = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary, fontSize = 20.sp
@@ -80,14 +87,27 @@ fun SignUPScreen(
             }
 
             Spacer(modifier = Modifier.height(40.dp))
-            EmailTextField()
+            EmailTextField(
+                text = screenState.email, handleInputChange = { textInput ->
+                    viewModel.updateEmailInput(textInput)
+                }, error = screenState.emailError
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            PasswordTextField()
+            PasswordTextField(
+                text = screenState.password, handleInputChange = { textInput ->
+                    viewModel.updatePasswordInput(textInput)
+                }, error = screenState.passwordError
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            ConfirmPasswordTextField()
+            ConfirmPasswordTextField(
+                text = screenState.confirmPassword, handleInputChange = { textInput ->
+                    viewModel.updateConfirmPasswordInput(textInput)
+                }, error = screenState.confirmPasswordError
+            )
             Spacer(modifier = Modifier.height(16.dp))
             ReusableAppButton(text = "Sign Up", onClick = {
-                navigateToSignInScreen()
+                viewModel.signUp()
+                //navigateToSignInScreen()
             })
 
         }
@@ -95,77 +115,88 @@ fun SignUPScreen(
 }
 
 @Composable
-fun EmailTextField() {
-    var text by remember { mutableStateOf(TextFieldValue("")) }
+fun EmailTextField(
+    text: String, handleInputChange: (String) -> Unit, error: String
+) {
+    Column {
+        OutlinedTextField(
+            value = text,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Email, contentDescription = "passwordIcon"
+                )
+            },
 
-    OutlinedTextField(
-        value = text,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Email, contentDescription = "passwordIcon"
-            )
-        },
-
-        onValueChange = {
-            text = it
-        },
-        label = { Text(text = "Enter Email") },
-        placeholder = { Text(text = "Confirm your password") },
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .width(285.dp)
-            .height(50.dp)
+            onValueChange = {
+                handleInputChange(it)
+            },
+            label = { Text(text = "Enter Email") },
+            placeholder = { Text(text = "Confirm your password") },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .width(285.dp)
+                .height(50.dp)
 
 
-    )
-}
+        )
+        Text(text = error)
 
-@Composable
-fun PasswordTextField() {
-    var text by remember { mutableStateOf(TextFieldValue("")) }
-
-    OutlinedTextField(
-        value = text,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Lock, contentDescription = "emailIcon"
-            )
-        },
-        onValueChange = {
-            text = it
-        },
-        label = { Text(text = "Password", color = Color.Black) },
-        placeholder = { Text(text = "Enter your password", color = Color.Gray) },
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .width(285.dp)
-            .height(50.dp)
-    )
+    }
 
 }
 
 @Composable
-fun ConfirmPasswordTextField() {
-    var text by remember { mutableStateOf(TextFieldValue("")) }
+fun PasswordTextField(text: String, handleInputChange: (String) -> Unit, error: String) {
 
-    OutlinedTextField(
-        value = text,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Lock, contentDescription = "emailIcon"
-            )
-        },
-        onValueChange = {
-            text = it
-        },
-        label = { Text(text = "Confirm Password", color = Color.Black) },
-        placeholder = { Text(text = "Confirm your password", color = Color.Gray) },
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .width(285.dp)
-            .height(50.dp)
+    Column {
+
+        OutlinedTextField(
+            value = text,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock, contentDescription = "emailIcon"
+                )
+            },
+            onValueChange = {
+                handleInputChange(it)
+            },
+            label = { Text(text = "Password", color = Color.Black) },
+            placeholder = { Text(text = "Enter your password", color = Color.Gray) },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .width(285.dp)
+                .height(50.dp)
+        )
+        Text(text = error)
+    }
+
+}
+
+@Composable
+fun ConfirmPasswordTextField(text: String, handleInputChange: (String) -> Unit, error: String) {
+    Column {
+        OutlinedTextField(
+            value = text,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock, contentDescription = "emailIcon"
+                )
+            },
+            onValueChange = {
+                handleInputChange(it)
+            },
+            label = { Text(text = "Confirm Password", color = Color.Black) },
+            placeholder = { Text(text = "Confirm your password", color = Color.Gray) },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .width(285.dp)
+                .height(50.dp)
 
 
-    )
+        )
+        Text(text = error)
+
+    }
+
 
 }
