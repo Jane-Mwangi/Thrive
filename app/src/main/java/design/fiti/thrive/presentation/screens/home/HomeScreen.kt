@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,8 +32,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +53,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import design.fiti.thrive.R
+import design.fiti.thrive.presentation.utility.ExpenseDialogueBox
 import design.fiti.thrive.presentation.utility.TabScreen
 
 
@@ -60,21 +64,32 @@ fun HomeScreen(
     navigateToHomeScreen: () -> Unit = {},
 ) {
     val brush = Brush.horizontalGradient(listOf(Color(0xffCCE0E0), Color(0xffE9D4D3)))
+    var showDialogue: Boolean by remember {
+        mutableStateOf(false)
+    }
+    var dialogueString: String by remember {
+        mutableStateOf("")
+    }
     Scaffold { innerPadding ->
-        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
-                .verticalScroll(state = scrollState)
                 .padding(innerPadding)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (showDialogue) {
+                ExpenseDialogueBox(
+                    value = dialogueString,
+                    setShowDialog = { showDialogue = it },
+                    setValue = { dialogueString = it })
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
                     .background(brush = brush)
                     .fillMaxWidth(0.95f)
+                    .fillMaxHeight(0.65f)
                     .padding(horizontal = 10.dp)
 
             ) {
@@ -85,7 +100,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
 
-                        Row{
+                        Row {
                             Box(
                                 modifier = Modifier
                                     .clip(shape = CircleShape)
@@ -169,7 +184,9 @@ fun HomeScreen(
                     Row {
 
                         Button(
-                            onClick = { /*TODO*/ }, shape = RoundedCornerShape(30.dp),
+                            onClick = {
+                                showDialogue = true
+                            }, shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
                                 .weight(0.4f),
                             contentPadding = PaddingValues(0.dp)
@@ -272,7 +289,7 @@ fun BottomBar(navHostController: NavHostController) {
 
         BottomNavigationItem(icon = {
             Icon(
-              Icons.Default.Home,
+                Icons.Default.Home,
                 tint = if (selectedIndex.value == 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
                     alpha = 0.2f
                 ),
@@ -305,7 +322,9 @@ fun BottomBar(navHostController: NavHostController) {
                 tint = if (selectedIndex.value == 1) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
                     alpha = 0.2f
                 ),
-                contentDescription = ""
+                contentDescription = "",
+                modifier = Modifier.size(24.dp)
+
             )
         },
             label = {

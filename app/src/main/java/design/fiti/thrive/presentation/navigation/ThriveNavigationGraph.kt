@@ -20,7 +20,7 @@ fun ThriveNavigationGraph() {
     Scaffold { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.HomeScreen.name,
+            startDestination = Routes.SignUpScreen.name,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = Routes.OrientationScreen.name) {

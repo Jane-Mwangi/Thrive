@@ -1,8 +1,8 @@
-package design.fiti.thrive.data.remote.util
+package design.fiti.second_hand_app.data.utility
+
 import java.lang.reflect.Type
 
 interface JsonParser {
     fun <T> fromJson(json: String, type: Type): T?
-
     fun <T> toJson(obj: T, type: Type): String?
 }

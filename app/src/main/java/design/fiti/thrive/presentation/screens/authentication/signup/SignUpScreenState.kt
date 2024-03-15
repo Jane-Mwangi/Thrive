@@ -1,6 +1,6 @@
 package design.fiti.thrive.presentation.screens.authentication.signup
 
-import design.fiti.thrive.core.util.Resource
+
 
 data class SignUpScreenState(
     val email: String = "",
@@ -9,6 +9,6 @@ data class SignUpScreenState(
     val passwordError: String = "",
     val confirmPassword: String = "",
     val confirmPasswordError: String = "",
-    val isLoading: Boolean = true,
+    val isLoading: WhenToNavigate = WhenToNavigate.Stopped,
     val apiResult: String? = null
 )

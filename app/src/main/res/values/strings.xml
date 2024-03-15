@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Thrive</string>
+    <string name="email_placeholder_text">Enter you email...</string>
 </resources>
