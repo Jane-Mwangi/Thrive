@@ -5,7 +5,7 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import design.fiti.thrive.core.util.Resource
+//import design.fiti.thrive.core.util.Resource
 import design.fiti.thrive.domain.model.User
 import design.fiti.thrive.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,37 +56,51 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun signUp() {
+        _uiState.update {
+            it.copy(
+                isLoading = WhenToNavigate.Processing
+            )
+        }
         val user = User(email = uiState.value.email, password = uiState.value.password)
-        if (validateEmail() &&
-            validatePassword() &&
-            validateConfirmPassword()
-        )
+        if (validateEmail() && validatePassword() && validateConfirmPassword())
             viewModelScope.launch {
-                repository.signUpUser(user = user).onEach { kileItarudi ->
-                    when (kileItarudi) {
-                        is Resource.Success -> {
-                            _uiState.value = uiState.value.copy(
-                                apiResult = kileItarudi.data,
-                                isLoading = false
-                            )
-                        }
+                try {
+                    repository.signUpUser(user = user).onEach { kileItarudi ->
+                        when (kileItarudi) {
+                            is Resource.Success -> {
+                                _uiState.value = uiState.value.copy(
+                                    apiResult = kileItarudi.data.toString(),
+                                    isLoading = WhenToNavigate.Go
+                                )
+                            }
 
-                        is Resource.Error -> {
-                            _uiState.value = uiState.value.copy(
-                                apiResult = kileItarudi.data,
-                                isLoading = false
-                            )
-                            Log.d("SignUpViewModel", " Errored ${kileItarudi.message}")
-                        }
+                            is Resource.Error -> {
+                                _uiState.value = uiState.value.copy(
+                                    apiResult = kileItarudi.data.toString(),
+                                    isLoading = WhenToNavigate.Stopped
+                                )
+                                Log.d("SignUpViewModel", " Errored ${kileItarudi.message}")
+                            }
 
-                        is Resource.Loading -> {
-                            _uiState.value = uiState.value.copy(
-                                apiResult = kileItarudi.data,
-                                isLoading = true
-                            )
+                            is Resource.Loading -> {
+                                _uiState.value = uiState.value.copy(
+                                    apiResult = kileItarudi.data.toString(),
+                                    isLoading = WhenToNavigate.Processing
+                                )
+                            }
+
+                            else -> {}
                         }
+                    }.launchIn(this)
+                } catch (e: Exception) {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = WhenToNavigate.Stopped,
+                            apiResult = e.localizedMessage?.toString(),
+                        )
                     }
-                }.launchIn(this)
+                }
+
             }
     }
 
@@ -103,7 +117,10 @@ class SignUpViewModel @Inject constructor(
             return true
         } else {
             _uiState.update {
-                it.copy(emailError = "Please enter a valid email")
+                it.copy(
+                    emailError = "Please enter a valid email",
+                    isLoading = WhenToNavigate.Stopped,
+                )
 
             }
             return false
@@ -115,15 +132,18 @@ class SignUpViewModel @Inject constructor(
 //        uiState.value.password.length >= 8
 
 //        uiState.value.password.matches(regex = Regex( ))
-        if (uiState.value.password.length >= 8) {
+        val count_password_length = 8
+        if (uiState.value.password.length >= count_password_length) {
             _uiState.update {
                 it.copy(passwordError = "That's a great password")
-
             }
             return true
         } else {
             _uiState.update {
-                it.copy(passwordError = "Password must be at least characters")
+                it.copy(
+                    isLoading = WhenToNavigate.Stopped,
+                    passwordError = "Password must be at least $count_password_length characters"
+                )
 
             }
             return false
@@ -131,15 +151,21 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun validateConfirmPassword(): Boolean {
-        if (uiState.value.confirmPassword == uiState.value.password) {
+        if (uiState.value.confirmPassword == (uiState.value.password)) {
             _uiState.update {
-                it.copy(confirmPasswordError = "Password matched ,yaay😙")
+                it.copy(
+
+                    confirmPasswordError = "Password matched ,yaay😙"
+                )
 
             }
             return true
         } else {
             _uiState.update {
-                it.copy(confirmPasswordError = "Password MUST match")
+                it.copy(
+                    isLoading = WhenToNavigate.Stopped,
+                    confirmPasswordError = "Password MUST match"
+                )
 
             }
             return false
@@ -147,4 +173,10 @@ class SignUpViewModel @Inject constructor(
     }
 
 
+}
+
+sealed class WhenToNavigate() {
+    object Stopped : WhenToNavigate()
+    object Processing : WhenToNavigate()
+    object Go : WhenToNavigate()
 }

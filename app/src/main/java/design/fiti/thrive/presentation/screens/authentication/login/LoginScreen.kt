@@ -1,8 +1,6 @@
 package design.fiti.thrive.presentation.screens.authentication.login
 
 
-
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -71,7 +69,7 @@ fun SignInScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Sign Up to continue",
+                            text = "Sign In to continue",
                             modifier = Modifier.padding(),
                             style = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary, fontSize = 20.sp
@@ -114,8 +112,7 @@ fun EmailTextField() {
         placeholder = { Text(text = "Confirm your password") },
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
-            .width(285.dp)
-            .height(50.dp)
+            .fillMaxWidth(0.8f)
 
 
     )
@@ -135,12 +132,11 @@ fun PasswordTextField() {
         onValueChange = {
             text = it
         },
-        label = { Text(text = "Password", color = Color.Black) },
+        label = { Text(text = "Password", color = MaterialTheme.colorScheme.onBackground) },
         placeholder = { Text(text = "Enter your password", color = Color.Gray) },
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
-            .width(285.dp)
-            .height(50.dp)
+            .fillMaxWidth(0.8f)
     )
 
 }

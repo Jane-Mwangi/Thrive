@@ -1,7 +1,6 @@
 package design.fiti.thrive.domain.repository
 
-import androidx.compose.runtime.Composable
-import design.fiti.thrive.core.util.Resource
+import Resource
 import design.fiti.thrive.domain.model.User
 import kotlinx.coroutines.flow.Flow
 

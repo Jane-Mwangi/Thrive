@@ -1,4 +1,4 @@
-package design.fiti.thrive.core.util
+
 
 typealias SimpleResource = Resource<Unit>
 
