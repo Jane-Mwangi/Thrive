@@ -13,7 +13,7 @@ class Converters(
 ) {
 
     @TypeConverter
-    fun fromExpenseIdListJson(json: String): List<  ExpenseDto> {
+    fun fromExpenseIdListJson(json: String): List<ExpenseDto> {
         return jsonParser.fromJson<ArrayList<ExpenseDto>>(
             json, object : TypeToken<ArrayList<ExpenseDto>>() {}.type
         ) ?: emptyList()
@@ -24,6 +24,16 @@ class Converters(
         return jsonParser.toJson(
             messages, object : TypeToken<ArrayList<ExpenseDto>>() {}.type
         ) ?: "[]"
+    }
+
+    @TypeConverter
+    fun fromList(list: List<Double>): String {
+        return list.joinToString(",")
+    }
+
+    @TypeConverter
+    fun toList(value: String): List<Double> {
+        return value.split(",").map { it.toDouble() }
     }
 
 //    @TypeConverter

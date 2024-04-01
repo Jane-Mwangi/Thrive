@@ -2,6 +2,8 @@ package design.fiti.thrive.data.repository
 
 import android.util.Log
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -13,22 +15,38 @@ import java.io.IOException
 import javax.inject.Inject
 
 class UserPreferencesImplementation @Inject constructor(
-    private val dataStore: DataStore<androidx.datastore.preferences.core.Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) : UserPreferencesRepository {
-    private companion object {
 
+    private companion object {
+        val SIGN_IN_FINISHED = booleanPreferencesKey("sign_in_finihed")
+        val IS_READY_FOR_HOME = booleanPreferencesKey("is_ready_for_home")
         val AUTH_TOKEN = stringPreferencesKey("auth_token")
         val DEVICE_TOKEN = stringPreferencesKey("devuce_token")
         const val TAG = "UserPreferencesRepo"
     }
 
+    override suspend fun savesignInPreference(signInFinished: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SIGN_IN_FINISHED] = signInFinished
+        }
+    }
+
+
+    override suspend fun saveReadyForHomePreference(isReadyForHome: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[IS_READY_FOR_HOME] = isReadyForHome
+        }
+    }
+
+
     override suspend fun saveTokenPreference(authTokenArg: String) {
-        Log.d("Nifixie Back Again", "saveTokenPreference: Clicked ")
-        Log.d("Nifixie Back Again", "saveTokenPreference: Clicked $authTokenArg ")
+        Log.d("Thrive Back Again", "saveTokenPreference: Clicked ")
+        Log.d("Thrive Back Again", "saveTokenPreference: Clicked $authTokenArg ")
         dataStore.edit { preferences ->
             preferences[AUTH_TOKEN] = authTokenArg
         }
-        Log.d("Nifixie Back Again", "saveTokenPreference: Token Should have been saved... ")
+        Log.d("Thrive Back Again", "saveTokenPreference: Token Should have been saved... ")
     }
 
     override suspend fun saveDeviceTokenPreference(deviceTokenArg: String) {
@@ -55,6 +73,28 @@ class UserPreferencesImplementation @Inject constructor(
         .map { preferences ->
             preferences[AUTH_TOKEN] ?: ""
         }
+
+    override val isSignInFinished: Flow<Boolean> = dataStore.data.catch {
+        if (it is IOException) {
+            Log.e(TAG, "Error reading isSignInFinishhed preferences.", it)
+            emit(emptyPreferences())
+        } else {
+            throw it
+        }
+    }.map { preferences ->
+        preferences[SIGN_IN_FINISHED] ?: false
+    }
+
+    override val isReadyForHome: Flow<Boolean> = dataStore.data.catch {
+        if (it is IOException) {
+            Log.e(TAG, "Error reading isReadyForHome preferences.", it)
+            emit(emptyPreferences())
+        } else {
+            throw it
+        }
+    }.map { preferences ->
+        preferences[IS_READY_FOR_HOME] ?: false
+    }
 
     override val deviceToken: Flow<String> = dataStore.data.catch {
         if (it is IOException) {

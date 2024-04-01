@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import design.fiti.thrive.R
 import design.fiti.thrive.presentation.utility.ReusableAppButton
 
@@ -32,8 +33,9 @@ import design.fiti.thrive.presentation.utility.ReusableAppButton
 @Preview
 @Composable
 fun OrientationScreen(
-    navigateToSignUpScreen: () -> Unit = {},
-    navigateToSignInScreen: () -> Unit = {}
+    navigateToSignUpScreen: () -> Unit,
+    navigateToSignInScreen: () -> Unit,
+    navController: NavHostController
 ) {
     Scaffold { innerPadding ->
         val scrollState = rememberScrollState()
@@ -56,19 +58,14 @@ fun OrientationScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Welcome", modifier = Modifier.padding(), style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary, fontSize = 20.sp
-                            )
+                            text = "Welcome", modifier = Modifier.padding(), style =  MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
             }
             Text(
                 text = "Create an account to get started",
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                ),
+                style =  MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -77,10 +74,7 @@ fun OrientationScreen(
             )
             Text(
                 text = "OR",
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                ),
+                style =  MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -89,21 +83,18 @@ fun OrientationScreen(
             )
             Text(
                 text = "Sign In",
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                ),
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             ReusableAppButton(text = "Sign Up", onClick = {
                 navigateToSignUpScreen()
             })
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             ReusableAppButton(text = "Sign In", onClick = {
                 navigateToSignInScreen()
             })

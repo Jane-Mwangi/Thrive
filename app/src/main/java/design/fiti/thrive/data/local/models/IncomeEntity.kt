@@ -9,11 +9,11 @@ data class IncomeEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val _id: String,
     val name: String,
-    val amount: Int,
-    val userIdReference: String
+    val amount: String,
+
 ) {
     fun toIncome(): Income = Income(
-        _id, name, amount, userIdReference
+        _id, name, amount
     )
 
 }

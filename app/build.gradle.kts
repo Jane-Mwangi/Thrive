@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "design.fiti.thrive"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -102,14 +102,19 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     //room
-    val room_version = "2.6.1"
+    val room_version = "2.6.0"
 
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 
     // Preferences DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation("com.squareup:javapoet:1.13.0")
+
+    //Y-chart
+    implementation ("co.yml:ycharts:2.1.0")
 
 
 }

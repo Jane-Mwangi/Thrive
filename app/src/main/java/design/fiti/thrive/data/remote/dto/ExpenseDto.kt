@@ -7,20 +7,20 @@ data class ExpenseDto(
     val _id: String,
     val name: String,
     val amount: String,
-    val userIdReference: String
+
 ) {
     fun toExpense(): Expense = Expense(
         _id,
         name,
         amount,
-        userIdReference
+
     )
 
     fun toExpenseEntity(): ExpenseEntity = ExpenseEntity(
         _id = _id,
         name = name,
         amount = amount,
-        userIdReference = userIdReference
+
     )
 }
 

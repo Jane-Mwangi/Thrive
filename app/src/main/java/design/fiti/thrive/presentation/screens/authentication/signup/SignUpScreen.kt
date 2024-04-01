@@ -42,11 +42,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import design.fiti.thrive.R
 
 import design.fiti.thrive.presentation.utility.ReusableAppButton
@@ -54,8 +56,9 @@ import design.fiti.thrive.presentation.utility.ReusableAppButton
 
 @Preview
 @Composable
-fun SignUPScreen(
-    navigateToSignInScreen: () -> Unit = {}
+fun SignUpScreen(
+    navigateToSignInScreen: () -> Unit = {},
+    navController: NavHostController
 ) {
     val viewModel: SignUpViewModel = hiltViewModel()
     val screenState by viewModel.uiState.collectAsState()
@@ -106,10 +109,9 @@ fun SignUPScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "Sign up to continue",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(),
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary, fontSize = 20.sp
-                            )
                         )
                     }
                 }
@@ -136,27 +138,32 @@ fun SignUPScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             EmailTextField(
                 text = screenState.email, handleInputChange = { textInput ->
                     viewModel.updateEmailInput(textInput)
                 }, error = screenState.emailError
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             PasswordTextField(
                 text = screenState.password, handleInputChange = { textInput ->
                     viewModel.updatePasswordInput(textInput)
                 }, error = screenState.passwordError
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             ConfirmPasswordTextField(
                 text = screenState.confirmPassword, handleInputChange = { textInput ->
                     viewModel.updateConfirmPasswordInput(textInput)
                 }, error = screenState.confirmPasswordError
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = screenState.apiResult ?: "", color = MaterialTheme.colorScheme.onBackground)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = screenState.apiResult ?: "",
+                modifier = Modifier.fillMaxWidth(0.8f),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             ReusableAppButton(text = "Sign Up", onClick = {
 
                 Log.d("Sign Up", "Signing you up")

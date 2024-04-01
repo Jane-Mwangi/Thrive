@@ -55,12 +55,17 @@ class SignUpViewModel @Inject constructor(
         validateConfirmPassword()
     }
 
+
     fun signUp() {
         _uiState.update {
             it.copy(
                 isLoading = WhenToNavigate.Processing
             )
         }
+        Log.d(
+            "Sign up//////////////////////////////////////////",
+            "signup called Email: ${uiState.value.email} Password : ${uiState.value.password}"
+        )
         val user = User(email = uiState.value.email, password = uiState.value.password)
         if (validateEmail() && validatePassword() && validateConfirmPassword())
             viewModelScope.launch {
@@ -70,13 +75,17 @@ class SignUpViewModel @Inject constructor(
                             is Resource.Success -> {
                                 _uiState.value = uiState.value.copy(
                                     apiResult = kileItarudi.data.toString(),
-                                    isLoading = WhenToNavigate.Go
+                                    isLoading = WhenToNavigate.Go,
+                                    email = "",
+                                    password = "",
+                                    confirmPassword = ""
+
                                 )
                             }
 
                             is Resource.Error -> {
                                 _uiState.value = uiState.value.copy(
-                                    apiResult = kileItarudi.data.toString(),
+                                    apiResult = kileItarudi.message,
                                     isLoading = WhenToNavigate.Stopped
                                 )
                                 Log.d("SignUpViewModel", " Errored ${kileItarudi.message}")
@@ -84,9 +93,64 @@ class SignUpViewModel @Inject constructor(
 
                             is Resource.Loading -> {
                                 _uiState.value = uiState.value.copy(
-                                    apiResult = kileItarudi.data.toString(),
+                                    apiResult = kileItarudi.message,
                                     isLoading = WhenToNavigate.Processing
                                 )
+                            }
+
+                            else -> {}
+                        }
+                    }.launchIn(this)
+                } catch (e: Exception) {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = WhenToNavigate.Stopped,
+                            apiResult = e.localizedMessage?.toString(),
+                        )
+                    }
+                }
+
+            }
+    }
+
+    fun LogIn() {
+        _uiState.update {
+            it.copy(
+                isLoading = WhenToNavigate.Processing
+            )
+        }
+        Log.d(
+            "Login Shit",
+            " Login called Email: ${uiState.value.email} Password : ${uiState.value.password}"
+        )
+        val user = User(email = uiState.value.email, password = uiState.value.password)
+        if (validateEmail() && validatePassword())
+            viewModelScope.launch {
+                try {
+                    repository.loginUser(user = user).onEach { response ->
+                        when (response) {
+                            is Resource.Success -> {
+                                _uiState.value = uiState.value.copy(
+                                    apiResult = response.data.toString(),
+                                    isLoading = WhenToNavigate.Go
+                                )
+                                Log.d("Login Success", " Success ${response.data}")
+                            }
+
+                            is Resource.Error -> {
+                                _uiState.value = uiState.value.copy(
+                                    apiResult = response.data.toString(),
+                                    isLoading = WhenToNavigate.Stopped
+                                )
+                                Log.d("LoginViewModel", " Errored ${response.message}")
+                            }
+
+                            is Resource.Loading -> {
+                                _uiState.value = uiState.value.copy(
+                                    apiResult = response.data.toString(),
+                                    isLoading = WhenToNavigate.Processing
+                                )
+                                Log.d("Login loading", " Loading///////////////////////")
                             }
 
                             else -> {}
@@ -111,7 +175,7 @@ class SignUpViewModel @Inject constructor(
         ).matches()
         if (result) {
             _uiState.update {
-                it.copy(emailError = "That's a valid email")
+                it.copy(emailError = "Email is valid.")
 
             }
             return true
@@ -135,7 +199,7 @@ class SignUpViewModel @Inject constructor(
         val count_password_length = 8
         if (uiState.value.password.length >= count_password_length) {
             _uiState.update {
-                it.copy(passwordError = "That's a great password")
+                it.copy(passwordError = "Password is valid")
             }
             return true
         } else {
@@ -155,7 +219,7 @@ class SignUpViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
 
-                    confirmPasswordError = "Password matched ,yaay😙"
+                    confirmPasswordError = "Password matched"
                 )
 
             }

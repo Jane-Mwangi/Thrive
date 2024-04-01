@@ -8,4 +8,7 @@ data class UserTransaction(
     val name: String,
     val transactionOwner: String,
     val transactionType: String
-)
+) {
+    fun toExpense(): Expense = Expense(_id, name, amount.toString())
+    fun toIncome(): Income = Income(_id, name, amount.toString())
+}

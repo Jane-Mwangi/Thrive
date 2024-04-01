@@ -2,6 +2,7 @@ package design.fiti.thrive.data.remote
 
 import design.fiti.thrive.data.remote.dto.CreateTransactionDto
 import design.fiti.thrive.data.remote.dto.DeleteResponseDto
+import design.fiti.thrive.data.remote.dto.PredictionsDto
 import design.fiti.thrive.data.remote.dto.UserDto
 import design.fiti.thrive.data.remote.dto.UserTransactionDto
 import retrofit2.http.Body
@@ -11,16 +12,17 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 
+const val tokenHeaderName = "x-auth-token"
 
 interface ThriveApi {
     @POST("users")
     suspend fun signUp(@Body user: UserDto): String
 
-    @POST("users/auth")
+    @POST("auth")
     suspend fun login(@Body user: UserDto): String
 
     companion object {
-        const val BASE_URL = "http://192.168.42.202:3900/api/"
+        const val BASE_URL = "https://thrive-api-21b1b358bea3.herokuapp.com/api/"
     }
 
     /**
@@ -53,31 +55,38 @@ interface ThriveApi {
 
     //creating//POST income and expense
     @POST("transaction/")
-    suspend fun createUserTransaction(
+    suspend fun createUserTransactionFromApi(
         @Body createTransaction: CreateTransactionDto,
-        @Header("Authorization") authToken: String,
+        @Header(tokenHeaderName) authToken: String,
     )
 
 
     //getting expense
     @GET("transaction/expense")
     suspend fun getExpense_forTheUser(
-        @Header("Authorization") authToken: String,
+        @Header(tokenHeaderName) authToken: String,
     ): List<UserTransactionDto>
 
     //getting income
 
     @GET("transaction/income")
     suspend fun getIncome_forTheUser(
-        @Header("Authorization") authToken: String,
+        @Header(tokenHeaderName) authToken: String,
     ): List<UserTransactionDto>
 
     //delete expense and income
     @DELETE("transaction/:id")
     suspend fun deleteUserTransaction(
-        @Header("Authorization") authToken: String,
-        @Path("transactionId") transactionId: String
+        @Header(tokenHeaderName) authToken: String,
+        @Path("id") transactionId: String
     ): DeleteResponseDto
+
+
+    //predictions
+    @GET("predict")
+    suspend fun getPredictions_forTheUser(
+        @Header(tokenHeaderName) authToken: String,
+    ): PredictionsDto
 
     abstract fun createUserTransaction(userTransaction: UserTransactionDto, authToken: String)
 

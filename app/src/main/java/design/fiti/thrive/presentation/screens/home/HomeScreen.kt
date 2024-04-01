@@ -16,22 +16,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,32 +43,49 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import design.fiti.second_hand_app.presentation.screens.settings.SettingsScreen
 import design.fiti.thrive.R
+import design.fiti.thrive.presentation.navigation.Routes
 import design.fiti.thrive.presentation.utility.ExpenseDialogueBox
 import design.fiti.thrive.presentation.utility.TabScreen
 
 
-@Preview
 @Composable
 fun HomeScreen(
-    navigateToSignInScreen: () -> Unit = {},
-    navigateToHomeScreen: () -> Unit = {},
+    homeViewmodel: HomeViewModel
 ) {
     val brush = Brush.horizontalGradient(listOf(Color(0xffCCE0E0), Color(0xffE9D4D3)))
+    val viewModel: HomeViewModel = hiltViewModel()
+    val screenState by viewModel.uiState.collectAsState()
+    var totalExpense: Int = 0
+    var totalIncome: Int = 0
+    var netIncome: Int = 0
+
+    LaunchedEffect(key1 = true) {
+        homeViewmodel.getAllMyExpenses()
+        homeViewmodel.getAllMyIncomes()
+
+        totalExpense =
+            screenState.expense.sumOf { Math.round(it.amount.toDouble()).toInt() }
+        totalIncome =
+            screenState.income.sumOf { Math.round(it.amount.toDouble()).toInt() }
+
+        netIncome = totalIncome - totalExpense
+    }
     var showDialogue: Boolean by remember {
         mutableStateOf(false)
     }
     var dialogueString: String by remember {
         mutableStateOf("")
     }
-    Scaffold { innerPadding ->
+    Scaffold() { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -79,6 +94,7 @@ fun HomeScreen(
         ) {
             if (showDialogue) {
                 ExpenseDialogueBox(
+                    homeViewmodel = homeViewmodel,
                     value = dialogueString,
                     setShowDialog = { showDialogue = it },
                     setValue = { dialogueString = it })
@@ -89,7 +105,7 @@ fun HomeScreen(
                     .clip(RoundedCornerShape(20.dp))
                     .background(brush = brush)
                     .fillMaxWidth(0.95f)
-                    .fillMaxHeight(0.65f)
+                    .fillMaxHeight(0.55f)
                     .padding(horizontal = 10.dp)
 
             ) {
@@ -105,11 +121,11 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .clip(shape = CircleShape)
                                     .size(45.dp)
-                                    .background(Color.Cyan),
+                                    .background(Color(0XFFE9E1E0)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.wallet),
+                                    painter = painterResource(id = R.drawable.wallet1),
                                     contentDescription = null
                                 )
                             }
@@ -120,14 +136,14 @@ fun HomeScreen(
                                     modifier = Modifier.height(4.dp)
                                 )
 
-                                Text(text = "$ 200")
+                                Text(text = "$ $netIncome")
                             }
                         }
                         Box(
                             modifier = Modifier
                                 .clip(shape = CircleShape)
                                 .size(30.dp)
-                                .background(Color.Cyan),
+                                .background(Color(0XFFE9E1E0)),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
@@ -136,7 +152,7 @@ fun HomeScreen(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Row {
                         Spacer(
@@ -148,13 +164,13 @@ fun HomeScreen(
                                 .clip(shape = RoundedCornerShape(8.dp))
                                 .weight(0.4f)
                                 .height(70.dp)
-                                .background(Color.Cyan),
+                                .background(Color(0xFFF1E5E4)),
                             contentAlignment = Alignment.CenterStart
                         ) {
                             Column(modifier = Modifier.padding(start = 12.dp)) {
                                 Text(text = "Income")
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = "$ 120000")
+                                Text(text = "$ $totalIncome")
                             }
                         }
                         Spacer(
@@ -167,25 +183,29 @@ fun HomeScreen(
                                 .clip(shape = RoundedCornerShape(8.dp))
                                 .weight(0.4f)
                                 .height(70.dp)
-                                .background(Color.Cyan),
+                                .background(Color(0xFFF1E5E4)),
                             contentAlignment = Alignment.CenterStart
                         ) {
                             Column(modifier = Modifier.padding(start = 12.dp)) {
                                 Text(text = "Expense")
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = "$ 120000")
+                                Text(text = "$ $totalExpense")
                             }
                         }
                     }
                     Spacer(
                         modifier = Modifier
-                            .height(40.dp)
+                            .height(24.dp)
                     )
                     Row {
 
+                        //income button
                         Button(
                             onClick = {
                                 showDialogue = true
+                                viewModel.updateUserSelectionOption(transactionType = TransactionType.Income)
+                                viewModel.getAllMyIncomes()
+
                             }, shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
                                 .weight(0.4f),
@@ -194,9 +214,9 @@ fun HomeScreen(
                             Box(
                                 modifier = Modifier
                                     .clip(shape = RoundedCornerShape(30.dp))
-                                    .height(70.dp)
+                                    .height(50.dp)
                                     .weight(0.4f)
-                                    .background(Color.Cyan),
+                                    .background(MaterialTheme.colorScheme.secondary),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Row {
@@ -204,8 +224,8 @@ fun HomeScreen(
                                         imageVector = Icons.Default.Add,
                                         contentDescription = "Press this to open"
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(text = "Add Expense")
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(text = "Add Income")
                                 }
                             }
 
@@ -215,8 +235,14 @@ fun HomeScreen(
                             modifier = Modifier
                                 .width(12.dp)
                         )
+
+                        //expense button
                         Button(
-                            onClick = { /*TODO*/ },
+                            onClick = {
+                                showDialogue = true
+                                viewModel.updateUserSelectionOption(transactionType = TransactionType.Expense)
+                                viewModel.getAllMyExpenses()
+                            },
                             shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
                                 .weight(0.4f),
@@ -224,9 +250,9 @@ fun HomeScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .height(70.dp)
+                                    .height(50.dp)
                                     .fillMaxSize()
-                                    .background(Color.Cyan),
+                                    .background(MaterialTheme.colorScheme.primary),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Row {
@@ -234,7 +260,7 @@ fun HomeScreen(
                                         imageVector = Icons.Default.Add,
                                         contentDescription = "Press this to open"
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
                                     Text(text = "Add Expense")
                                 }
                             }
@@ -244,13 +270,13 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(40.dp))
                 }
             }
-            TabScreen()
+            TabScreen(homeViewmodel = homeViewmodel)
         }
     }
 }
 
 @Composable
-fun BottomNavGraph() {
+fun BottomNavGraph(homeViewmodel: HomeViewModel) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
@@ -263,13 +289,21 @@ fun BottomNavGraph() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = BottomNavScreens.HomeScreen.route) {
-                HomeScreen()
+                HomeScreen(homeViewmodel = homeViewmodel)
             }
             composable(route = BottomNavScreens.InsightScreen.route) {
-                InsightScreen()
+                InsightScreen(
+                    homeViewModel = homeViewmodel
+                )
             }
             composable(route = BottomNavScreens.SettingsScreen.route) {
-                SettingsScreen()
+                SettingsScreen(homeViewModel = homeViewmodel) {
+//                    handleSignOut()
+                    navController.popBackStack()
+                    //coz they've logged out
+                    navController.navigate(Routes.ORIENTATION.name)
+
+                }
             }
 
 
@@ -289,8 +323,8 @@ fun BottomBar(navHostController: NavHostController) {
 
         BottomNavigationItem(icon = {
             Icon(
-                Icons.Default.Home,
-                tint = if (selectedIndex.value == 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
+                painter = painterResource(id = R.drawable.home1),
+                tint = if (selectedIndex.value == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
                     alpha = 0.2f
                 ),
                 contentDescription = ""
@@ -303,7 +337,7 @@ fun BottomBar(navHostController: NavHostController) {
                         fontSize = 12.sp,
                         lineHeight = 16.sp,
                         fontWeight = FontWeight(600),
-                        color = if (selectedIndex.value == 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
+                        color = if (selectedIndex.value == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
                             alpha = 0.2f
                         ),
                         textAlign = TextAlign.Center,
@@ -318,8 +352,8 @@ fun BottomBar(navHostController: NavHostController) {
 
         BottomNavigationItem(icon = {
             Icon(
-                painter = painterResource(id = R.drawable.insights),
-                tint = if (selectedIndex.value == 1) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
+                painter = painterResource(id = R.drawable.graphs),
+                tint = if (selectedIndex.value == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
                     alpha = 0.2f
                 ),
                 contentDescription = "",
@@ -334,7 +368,7 @@ fun BottomBar(navHostController: NavHostController) {
                         fontSize = 12.sp,
                         lineHeight = 16.sp,
                         fontWeight = FontWeight(600),
-                        color = if (selectedIndex.value == 1) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
+                        color = if (selectedIndex.value == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
                             alpha = 0.2f
                         ),
                         textAlign = TextAlign.Center,
@@ -349,8 +383,8 @@ fun BottomBar(navHostController: NavHostController) {
 
         BottomNavigationItem(icon = {
             Icon(
-                Icons.Default.Settings,
-                tint = if (selectedIndex.value == 2) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
+                painter = painterResource(id = R.drawable.settings),
+                tint = if (selectedIndex.value == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
                     alpha = 0.2f
                 ),
                 contentDescription = ""
@@ -363,7 +397,7 @@ fun BottomBar(navHostController: NavHostController) {
                         fontSize = 12.sp,
                         lineHeight = 16.sp,
                         fontWeight = FontWeight(600),
-                        color = if (selectedIndex.value == 2) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
+                        color = if (selectedIndex.value == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
                             alpha = 0.2f
                         ),
                         textAlign = TextAlign.Center,

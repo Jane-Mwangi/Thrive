@@ -24,39 +24,47 @@ class TransactionRepositoryImplementation(
     private val api: ThriveApi,
     private val dao: AppDao,
     private val userPreferences: UserPreferencesRepository
-):TransactionRepository {
+) : TransactionRepository {
 
-    override  suspend fun createUserTransaction( createTransaction: CreateTransactionDto): Flow<Resource<String>> = flow {
-        emit(Resource.Loading())
-        var authToken: String =
-            userPreferences.authToken.stateIn(CoroutineScope(Job() + Dispatchers.IO)).value
-        try {
-            val response = api.createUserTransaction(createTransaction = createTransaction,authToken=authToken)
+    override suspend fun createUserTransaction(createTransaction: CreateTransactionDto): Flow<Resource<String>> =
+        flow {
+            emit(Resource.Loading())
+            val authToken: String =
+                userPreferences.authToken.stateIn(CoroutineScope(Job() + Dispatchers.IO)).value
             Log.d(
                 "Home Vm  upload.......................",
-                "(createNewExpense) Its successefully returned: ${response.toString()}"
+                "(createNewExpense) CreateToken: ........ ${authToken}"
             )
-            emit(Resource.Success(data = "Successfully created your expense"))
-        } catch (e: HttpException) {
-            Log.d(
-                "Home Vm  upload.......................",
-                "(createNewExpense) Create Expense Api Error Called on Expense repo ${e.message} ${e.message()} ${
-                    e.response()
-                } The expense data : ${createTransaction}"
-            )
-            emit(
-                Resource.Error(
-                    e.message()
+            try {
+                val response = api.createUserTransactionFromApi(
+                    createTransaction = createTransaction,
+                    authToken = authToken
                 )
-            )
-        } catch (e: IOException) {
-            emit(Resource.Error(ioError + "::" + e.message))
-            Log.d(
-                "Home Vm  upload.......................",
-                "(CreateTransaction) Create expense Api Error Called on expense repo impl ${e.message} The New expense data : ${createTransaction}"
-            )
+                Log.d(
+                    "Home Vm  upload.......................",
+                    "(createNewExpense) Its successefully returned: $response Token: ........ ${authToken}"
+                )
+                emit(Resource.Success(data = "Successfully created your expense"))
+            } catch (e: HttpException) {
+                Log.d(
+                    "Home Vm  upload.......................",
+                    "(createNewExpense) Create Expense Api Error Called on Expense repo ${e.message} ${e.message()} ${
+                        e.response()
+                    } The expense data : ${createTransaction}"
+                )
+                emit(
+                    Resource.Error(
+                        e.message()
+                    )
+                )
+            } catch (e: IOException) {
+                emit(Resource.Error(ioError + "::" + e.message))
+                Log.d(
+                    "Home Vm  upload.......................",
+                    "(CreateTransaction) Create expense Api Error Called on expense repo impl ${e.message} The New expense data : ${createTransaction}"
+                )
+            }
         }
-    }
 
     override suspend fun deleteUserTransaction(transactionId: String): Flow<Resource<DeleteResponse>> =
         flow {
@@ -161,6 +169,7 @@ class TransactionRepositoryImplementation(
             fetchedIncomes.forEach() {
                 dao.insertUserTransaction(it.toUserTransactionEntity())
             }
+
         } catch (e: HttpException) {
             Log.d(
                 "Home Vm What is fetched",
@@ -177,7 +186,7 @@ class TransactionRepositoryImplementation(
         }
 
         var newIncomes: List<UserTransaction> =
-            dao.getAllUserExpense()
+            dao.getAllUserIncome()
                 .stateIn(CoroutineScope(Job() + Dispatchers.IO)).value.map { it.toUserTransaction() }
 
         emit(Resource.Success(newIncomes))
@@ -185,5 +194,4 @@ class TransactionRepositoryImplementation(
     }
 
 
-
-    }
+}
