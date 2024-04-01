@@ -32,7 +32,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import design.fiti.second_hand_app.presentation.screens.settings.SettingsScreen
 import design.fiti.thrive.presentation.screens.authentication.login.SignInScreen
 import design.fiti.thrive.presentation.screens.authentication.signup.SignUpScreen
 import design.fiti.thrive.presentation.screens.authentication.signup.SignUpViewModel
@@ -129,7 +128,7 @@ fun ThriveNavigationGraph(
             enterTransition = slideInto(timeInMillis),
             exitTransition = exitTransition(timeInMillis)
         ) {
-            BottomNavGraph(homeViewmodel = homeViewModel)
+            BottomNavGraph(homeViewmodel = homeViewModel,mainNavController = mainNavController)
 //            HomeScreen(navController = mainNavController)
         }
         composable(

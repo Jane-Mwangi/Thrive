@@ -1,5 +1,6 @@
 package design.fiti.thrive.presentation.screens.orientation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -37,6 +38,9 @@ fun OrientationScreen(
     navigateToSignInScreen: () -> Unit,
     navController: NavHostController
 ) {
+    BackHandler {
+
+    }
     Scaffold { innerPadding ->
         val scrollState = rememberScrollState()
         Column(modifier = Modifier.verticalScroll(state = scrollState)) {
@@ -58,14 +62,17 @@ fun OrientationScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Welcome", modifier = Modifier.padding(), style =  MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary
+                            text = "Welcome",
+                            modifier = Modifier.padding(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
             }
             Text(
                 text = "Create an account to get started",
-                style =  MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -74,7 +81,7 @@ fun OrientationScreen(
             )
             Text(
                 text = "OR",
-                style =  MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

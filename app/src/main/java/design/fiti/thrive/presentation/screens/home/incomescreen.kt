@@ -124,8 +124,7 @@ fun IncomeItemRow(item: Income) {
                 painter = painterResource(id = R.drawable.income),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(42.dp)
-                    .padding(end = 16.dp)
+                    .size(24.dp)
 
             )
 

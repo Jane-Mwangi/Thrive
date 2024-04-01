@@ -33,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,6 +53,7 @@ import androidx.navigation.compose.rememberNavController
 import design.fiti.second_hand_app.presentation.screens.settings.SettingsScreen
 import design.fiti.thrive.R
 import design.fiti.thrive.presentation.navigation.Routes
+import design.fiti.thrive.presentation.screens.authentication.signup.WhenToNavigate
 import design.fiti.thrive.presentation.utility.ExpenseDialogueBox
 import design.fiti.thrive.presentation.utility.TabScreen
 
@@ -62,22 +63,63 @@ fun HomeScreen(
     homeViewmodel: HomeViewModel
 ) {
     val brush = Brush.horizontalGradient(listOf(Color(0xffCCE0E0), Color(0xffE9D4D3)))
-    val viewModel: HomeViewModel = hiltViewModel()
+    val viewModel: HomeViewModel = homeViewmodel
     val screenState by viewModel.uiState.collectAsState()
-    var totalExpense: Int = 0
-    var totalIncome: Int = 0
-    var netIncome: Int = 0
+    var totalExpense by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var totalIncome by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var netIncome by rememberSaveable {
+        mutableStateOf(0)
+    }
 
     LaunchedEffect(key1 = true) {
         homeViewmodel.getAllMyExpenses()
         homeViewmodel.getAllMyIncomes()
+    }
+    LaunchedEffect(
+        key1 = screenState.getincomesloadState,
+        key2 = screenState.getExpensesloadState
+    ) {
 
-        totalExpense =
-            screenState.expense.sumOf { Math.round(it.amount.toDouble()).toInt() }
-        totalIncome =
-            screenState.income.sumOf { Math.round(it.amount.toDouble()).toInt() }
+        when (screenState.getincomesloadState) {
+            is WhenToNavigate.Go -> {
 
-        netIncome = totalIncome - totalExpense
+                totalExpense =
+                    screenState.expense.sumOf { Math.round(it.amount.toDouble()).toInt() }
+                totalIncome =
+                    screenState.income.sumOf { Math.round(it.amount.toDouble()).toInt() }
+
+                netIncome = totalIncome - totalExpense
+            }
+
+            is WhenToNavigate.Processing -> {
+
+            }
+
+            is WhenToNavigate.Stopped -> {
+            }
+        }
+        when (screenState.getExpensesloadState) {
+            is WhenToNavigate.Go -> {
+                totalExpense =
+                    screenState.expense.sumOf { Math.round(it.amount.toDouble()).toInt() }
+                totalIncome =
+                    screenState.income.sumOf { Math.round(it.amount.toDouble()).toInt() }
+
+                netIncome = totalIncome - totalExpense
+            }
+
+            is WhenToNavigate.Processing -> {
+
+            }
+
+            is WhenToNavigate.Stopped -> {
+            }
+        }
+
     }
     var showDialogue: Boolean by remember {
         mutableStateOf(false)
@@ -276,7 +318,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun BottomNavGraph(homeViewmodel: HomeViewModel) {
+fun BottomNavGraph(homeViewmodel: HomeViewModel, mainNavController: NavHostController) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
@@ -301,7 +343,8 @@ fun BottomNavGraph(homeViewmodel: HomeViewModel) {
 //                    handleSignOut()
                     navController.popBackStack()
                     //coz they've logged out
-                    navController.navigate(Routes.ORIENTATION.name)
+                    mainNavController.popBackStack()
+                    mainNavController.navigate(Routes.ORIENTATION.name)
 
                 }
             }
