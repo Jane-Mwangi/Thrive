@@ -1,7 +1,9 @@
 package design.fiti.thrive.presentation.screens.home
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import design.fiti.thrive.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -86,6 +90,7 @@ fun ExpenseScreen(
         } else {
             items(screenState.expense) { item ->
                 ExpenseItemRow(item = item)
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -98,17 +103,29 @@ fun ExpenseItemRow(item: Expense) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(24.dp), verticalAlignment = Alignment.CenterVertically
+            .padding(start = 24.dp), verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Icon(
-            painter = painterResource(id = R.drawable.wallet),
-            contentDescription = null,
+        Box(
             modifier = Modifier
-                .size(42.dp)
-                .padding(end = 16.dp)
-        )
+                .background(
+                    color = MaterialTheme.colorScheme.secondary,
+                    shape = RoundedCornerShape(25.dp)
+                )
+                .size(52.dp), contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                tint = MaterialTheme.colorScheme.tertiary,
+                painter = painterResource(id = R.drawable.expense),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(24.dp)
 
+
+            )
+
+        }
+        Spacer(modifier = Modifier.width(12.dp))
         Text(text = item.name, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.width(20.dp))
         Text(text = "$${item.amount}")

@@ -121,10 +121,12 @@ fun IncomeItemRow(item: Income) {
                 .size(52.dp), contentAlignment = Alignment.Center
         ) {
             Icon(
+                tint = MaterialTheme.colorScheme.tertiary,
                 painter = painterResource(id = R.drawable.income),
                 contentDescription = null,
                 modifier = Modifier
                     .size(24.dp)
+
 
             )
 

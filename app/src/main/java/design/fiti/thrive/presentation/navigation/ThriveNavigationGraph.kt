@@ -36,6 +36,7 @@ import design.fiti.thrive.presentation.screens.authentication.login.SignInScreen
 import design.fiti.thrive.presentation.screens.authentication.signup.SignUpScreen
 import design.fiti.thrive.presentation.screens.authentication.signup.SignUpViewModel
 import design.fiti.thrive.presentation.screens.home.BottomNavGraph
+import design.fiti.thrive.presentation.screens.home.HomeScreen
 import design.fiti.thrive.presentation.screens.home.HomeViewModel
 import design.fiti.thrive.presentation.screens.home.InsightScreen
 import design.fiti.thrive.presentation.screens.orientation.OrientationScreen
@@ -128,8 +129,7 @@ fun ThriveNavigationGraph(
             enterTransition = slideInto(timeInMillis),
             exitTransition = exitTransition(timeInMillis)
         ) {
-            BottomNavGraph(homeViewmodel = homeViewModel,mainNavController = mainNavController)
-//            HomeScreen(navController = mainNavController)
+            BottomNavGraph(homeViewmodel = homeViewModel, mainNavController = mainNavController)
         }
         composable(
             route = Routes.SIGNUP.name,

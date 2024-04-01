@@ -60,7 +60,7 @@ import design.fiti.thrive.presentation.utility.TabScreen
 
 @Composable
 fun HomeScreen(
-    homeViewmodel: HomeViewModel
+    homeViewmodel: HomeViewModel,
 ) {
     val brush = Brush.horizontalGradient(listOf(Color(0xffCCE0E0), Color(0xffE9D4D3)))
     val viewModel: HomeViewModel = homeViewmodel
@@ -178,7 +178,7 @@ fun HomeScreen(
                                     modifier = Modifier.height(4.dp)
                                 )
 
-                                Text(text = "$ $netIncome")
+                                Text(text = "$ $netIncome", style = MaterialTheme.typography.titleMedium)
                             }
                         }
                         Box(
@@ -188,10 +188,14 @@ fun HomeScreen(
                                 .background(Color(0XFFE9E1E0)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.user),
-                                contentDescription = null
-                            )
+
+                                Image(
+                                    painter = painterResource(id = R.drawable.user),
+                                    contentDescription = null
+                                )
+
+
+
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -212,7 +216,7 @@ fun HomeScreen(
                             Column(modifier = Modifier.padding(start = 12.dp)) {
                                 Text(text = "Income")
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = "$ $totalIncome")
+                                Text(text = "$ $totalIncome",style = MaterialTheme.typography.titleMedium)
                             }
                         }
                         Spacer(
@@ -231,7 +235,7 @@ fun HomeScreen(
                             Column(modifier = Modifier.padding(start = 12.dp)) {
                                 Text(text = "Expense")
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = "$ $totalExpense")
+                                Text(text = "$ $totalExpense",style = MaterialTheme.typography.titleMedium)
                             }
                         }
                     }
@@ -248,14 +252,14 @@ fun HomeScreen(
                                 viewModel.updateUserSelectionOption(transactionType = TransactionType.Income)
                                 viewModel.getAllMyIncomes()
 
-                            }, shape = RoundedCornerShape(30.dp),
+                            }, shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .weight(0.4f),
                             contentPadding = PaddingValues(0.dp)
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .clip(shape = RoundedCornerShape(30.dp))
+                                    .clip(shape = RoundedCornerShape(16.dp))
                                     .height(50.dp)
                                     .weight(0.4f)
                                     .background(MaterialTheme.colorScheme.secondary),
@@ -266,7 +270,7 @@ fun HomeScreen(
                                         imageVector = Icons.Default.Add,
                                         contentDescription = "Press this to open"
                                     )
-                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Spacer(modifier = Modifier.width(1.5.dp))
                                     Text(text = "Add Income")
                                 }
                             }
@@ -285,7 +289,7 @@ fun HomeScreen(
                                 viewModel.updateUserSelectionOption(transactionType = TransactionType.Expense)
                                 viewModel.getAllMyExpenses()
                             },
-                            shape = RoundedCornerShape(30.dp),
+                            shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .weight(0.4f),
                             contentPadding = PaddingValues(0.dp)
@@ -302,7 +306,7 @@ fun HomeScreen(
                                         imageVector = Icons.Default.Add,
                                         contentDescription = "Press this to open"
                                     )
-                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Spacer(modifier = Modifier.width(1.dp))
                                     Text(text = "Add Expense")
                                 }
                             }
@@ -317,8 +321,14 @@ fun HomeScreen(
     }
 }
 
+
+
 @Composable
-fun BottomNavGraph(homeViewmodel: HomeViewModel, mainNavController: NavHostController) {
+fun BottomNavGraph(
+    homeViewmodel: HomeViewModel,
+    mainNavController: NavHostController,
+
+) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {

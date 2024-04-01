@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -152,11 +153,9 @@ fun ExpenseDialogueBox(
                             unfocusedIndicatorColor = Color.Transparent
                         ),
                         leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Create,
-                                contentDescription = "",
+                               Icon(painter = painterResource(id = R.drawable.money), contentDescription =null )
 //                                tint = colorResource(R.color.purple_200),
-                            )
+
                         },
                         placeholder = { Text(text = "Enter amount") },
                         value = amountField.value,

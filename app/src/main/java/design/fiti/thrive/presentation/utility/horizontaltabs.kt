@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -30,7 +31,7 @@ fun TabScreen(homeViewmodel: HomeViewModel) {
         TabRow(selectedTabIndex = tabIndex) {
             tabs.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(title) },
+                    text = { Text(title,style = MaterialTheme.typography.titleMedium) },
                     selected = tabIndex == index,
                     onClick = { tabIndex = index },
                 )
