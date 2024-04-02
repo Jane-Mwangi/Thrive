@@ -55,6 +55,7 @@ import design.fiti.thrive.R
 import design.fiti.thrive.presentation.navigation.Routes
 import design.fiti.thrive.presentation.screens.authentication.signup.WhenToNavigate
 import design.fiti.thrive.presentation.utility.ExpenseDialogueBox
+import design.fiti.thrive.presentation.utility.IncomeDialogueBox
 import design.fiti.thrive.presentation.utility.TabScreen
 
 
@@ -121,7 +122,10 @@ fun HomeScreen(
         }
 
     }
-    var showDialogue: Boolean by remember {
+    var showDialogue1: Boolean by remember {
+        mutableStateOf(false)
+    }
+    var showDialogue2: Boolean by remember {
         mutableStateOf(false)
     }
     var dialogueString: String by remember {
@@ -134,13 +138,21 @@ fun HomeScreen(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (showDialogue) {
+            if (showDialogue1) {
                 ExpenseDialogueBox(
                     homeViewmodel = homeViewmodel,
                     value = dialogueString,
-                    setShowDialog = { showDialogue = it },
+                    setShowDialog = { showDialogue1 = it },
                     setValue = { dialogueString = it })
             }
+            if (showDialogue2) {
+                IncomeDialogueBox(
+                    homeViewmodel = homeViewmodel,
+                    value = dialogueString,
+                    setShowDialog = { showDialogue2 = it },
+                    setValue = { dialogueString = it })
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
             Box(
                 modifier = Modifier
@@ -248,9 +260,8 @@ fun HomeScreen(
                         //income button
                         Button(
                             onClick = {
-                                showDialogue = true
-                                viewModel.updateUserSelectionOption(transactionType = TransactionType.Income)
-                                viewModel.getAllMyIncomes()
+                                showDialogue2 = true
+                                homeViewmodel.updateUserSelectionOption(transactionType = TransactionType.Income)
 
                             }, shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
@@ -285,9 +296,8 @@ fun HomeScreen(
                         //expense button
                         Button(
                             onClick = {
-                                showDialogue = true
-                                viewModel.updateUserSelectionOption(transactionType = TransactionType.Expense)
-                                viewModel.getAllMyExpenses()
+                                showDialogue1 = true
+                                homeViewmodel.updateUserSelectionOption(transactionType = TransactionType.Expense)
                             },
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier

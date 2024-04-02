@@ -84,7 +84,7 @@ fun ExpenseDialogueBox(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = if (homeViewmodel.getSelectedTransactionType() == "income") "Income" else "Expense",
+                            text ="Expense",
                             style = TextStyle(
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.Default,
@@ -173,7 +173,155 @@ fun ExpenseDialogueBox(
                                     txtFieldError.value = "Field can not be empty"
                                     return@Button
                                 } else {
-                                    viewModel.handleCreateTransaction(
+                                    homeViewmodel.handleCreateTransaction(
+                                        amount = amountField.value.toInt(),
+                                        nameOfYourTransaction = nameField.value,
+                                    )
+                                    setShowDialog(false)
+                                }
+                                setValue(nameField.value)
+
+                            },
+                            shape = RoundedCornerShape(30),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                        ) {
+
+                            Text(text = "Done")
+
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun IncomeDialogueBox(
+    value: String,
+    setShowDialog: (Boolean) -> Unit,
+    setValue: (String) -> Unit,
+    homeViewmodel: HomeViewModel
+) {
+    val viewModel: HomeViewModel = hiltViewModel()
+    val screenState by viewModel.uiState.collectAsState()
+    val txtFieldError = remember { mutableStateOf("") }
+    val nameField = remember { mutableStateOf(value) }
+    val amountField = remember { mutableStateOf(value) }
+
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(24.dp),
+            color = Color.White,
+            modifier = Modifier.fillMaxWidth(0.88f)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text =  "Income",
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+//                            tint = colorResource(R.color.purple_200),
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                BorderStroke(
+                                    width = 2.dp,
+//                                    color = colorResource(id = if (txtFieldError.value.isEmpty()) R.color.purple_200 else R.color.purple_200)
+                                    color = MaterialTheme.colorScheme.secondary
+                                ),
+                                shape = RoundedCornerShape(30)
+                            ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.AccountCircle,
+                                contentDescription = "",
+//                                tint = colorResource(R.color.purple_200),
+                            )
+                        },
+                        placeholder = { Text(text = "Enter name") },
+                        value = nameField.value,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        onValueChange = {
+                            nameField.value = it.take(10)
+                        })
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                BorderStroke(
+                                    width = 2.dp,
+//                                    color = colorResource(id = if (txtFieldError.value.isEmpty()) R.color.purple_200 else R.color.purple_200)
+                                    color = MaterialTheme.colorScheme.secondary
+                                ),
+                                shape = RoundedCornerShape(30)
+                            ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        leadingIcon = {
+                            Icon(painter = painterResource(id = R.drawable.money), contentDescription =null )
+//                                tint = colorResource(R.color.purple_200),
+
+                        },
+                        placeholder = { Text(text = "Enter amount") },
+                        value = amountField.value,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange = {
+                            amountField.value = it.take(10)
+                        })
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+                        Button(
+
+                            onClick = {
+
+                                if (amountField.value.isEmpty() && nameField.value.isEmpty()) {
+                                    txtFieldError.value = "Field can not be empty"
+                                    return@Button
+                                } else {
+                                    homeViewmodel.handleCreateTransaction(
                                         amount = amountField.value.toInt(),
                                         nameOfYourTransaction = nameField.value
                                     )

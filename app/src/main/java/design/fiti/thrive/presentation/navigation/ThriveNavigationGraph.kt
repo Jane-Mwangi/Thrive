@@ -101,7 +101,7 @@ fun ThriveNavigationGraph(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Thrive", style = MaterialTheme.typography.displaySmall)
+                    Text(text = "Thrive")
                     Spacer(modifier = Modifier.height(12.dp))
                     CircularProgressIndicator(modifier = Modifier.size(36.dp))
 
